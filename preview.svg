@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1b3e"/>
+      <stop offset="50%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#061020"/>
+    </linearGradient>
+    <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Glow circles -->
+  <circle cx="200" cy="150" r="200" fill="#3b82f6" opacity="0.06"/>
+  <circle cx="1000" cy="500" r="180" fill="#06b6d4" opacity="0.05"/>
+
+  <!-- Rain lines -->
+  <line x1="100" y1="0" x2="80" y2="630" stroke="#38bdf8" stroke-width="1" opacity="0.06"/>
+  <line x1="300" y1="0" x2="280" y2="630" stroke="#38bdf8" stroke-width="1" opacity="0.04"/>
+  <line x1="500" y1="0" x2="480" y2="630" stroke="#38bdf8" stroke-width="1" opacity="0.05"/>
+  <line x1="700" y1="0" x2="680" y2="630" stroke="#38bdf8" stroke-width="1" opacity="0.04"/>
+  <line x1="900" y1="0" x2="880" y2="630" stroke="#38bdf8" stroke-width="1" opacity="0.06"/>
+  <line x1="1100" y1="0" x2="1080" y2="630" stroke="#38bdf8" stroke-width="1" opacity="0.04"/>
+
+  <!-- Weather emojis -->
+  <text x="140" y="260" font-size="130" font-family="Apple Color Emoji,Segoe UI Emoji,sans-serif" text-anchor="middle" opacity="0.9">&#x26C8;&#xFE0F;</text>
+  <text x="340" y="200" font-size="80" font-family="Apple Color Emoji,Segoe UI Emoji,sans-serif" text-anchor="middle" opacity="0.5">&#x1F324;&#xFE0F;</text>
+  <text x="1060" y="280" font-size="100" font-family="Apple Color Emoji,Segoe UI Emoji,sans-serif" text-anchor="middle" opacity="0.6">&#x1F321;&#xFE0F;</text>
+  <text x="1100" y="420" font-size="70" font-family="Apple Color Emoji,Segoe UI Emoji,sans-serif" text-anchor="middle" opacity="0.4">&#x1F32A;&#xFE0F;</text>
+
+  <!-- Main Title -->
+  <text x="600" y="290"
+    font-size="96"
+    font-family="'Noto Sans Devanagari','Mangal',sans-serif"
+    font-weight="900"
+    text-anchor="middle"
+    fill="url(#tg)"
+    filter="url(#glow)">&#x906;&#x91C; &#x915;&#x93E; &#x92E;&#x094C;&#x938;&#x092E;</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="370"
+    font-size="38"
+    font-family="'Noto Sans Devanagari','Mangal',sans-serif"
+    font-weight="400"
+    text-anchor="middle"
+    fill="#94a3b8">&#x905;&#x92A;&#x928;&#x947; &#x936;&#x939;&#x930; &#x915;&#x93E; &#x92E;&#x094C;&#x938;&#x092E; &#x91C;&#x093E;&#x928;&#x947;&#x902; &#x2014; &#x0939;&#x093F;&#x0928;&#x094D;&#x0926;&#x0940; &#x092E;&#x0947;&#x0902;</text>
+
+  <!-- Alert badge -->
+  <rect x="400" y="400" width="400" height="58" rx="29" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="600" y="438"
+    font-size="26"
+    font-family="'Noto Sans Devanagari','Mangal',sans-serif"
+    font-weight="700"
+    text-anchor="middle"
+    fill="#60a5fa">&#x26A1; Weather Alert! Live Update</text>
+
+  <!-- Domain -->
+  <text x="600" y="540"
+    font-size="28"
+    font-family="'Helvetica Neue',Arial,sans-serif"
+    font-weight="400"
+    text-anchor="middle"
+    fill="#334155">mausam.vhoriginal.com</text>
+
+  <!-- Bottom line -->
+  <line x1="100" y1="570" x2="1100" y2="570" stroke="#1e2d45" stroke-width="1"/>
+  <text x="600" y="600"
+    font-size="20"
+    font-family="Arial,sans-serif"
+    text-anchor="middle"
+    fill="#1e3a5f">vhoriginal.com | Free Hindi Weather Tool</text>
+</svg>
