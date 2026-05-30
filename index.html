@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>आज का मौसम ⛈️🌤️ | mausam.vhoriginal.com</title>
+<meta name="description" content="अपने शहर का मौसम जानें — बारिश, तूफान, गर्मी, ठंड की सटीक जानकारी हिंदी में।">
+<meta property="og:title" content="आज का मौसम ⛈️🌤️ Weather Alert!">
+<meta property="og:description" content="अपने शहर का मौसम जानें — बारिश, तूफान, गर्मी, ठंड की सटीक जानकारी हिंदी में।">
+<meta property="og:image" content="https://mausam.vhoriginal.com/preview.svg">
+<meta property="og:url" content="https://mausam.vhoriginal.com">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mausam.vhoriginal.com/preview.svg">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="मौसम">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a0e1a'/><text y='65' x='50' text-anchor='middle' font-size='58'>⛅</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a0e1a'/><text y='65' x='50' text-anchor='middle' font-size='58'>⛅</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a; --bg2:#0d1224; --card:#131c2e; --card2:#0f1620;
+  --blue:#3b82f6; --blue2:#60a5fa; --blue3:#93c5fd;
+  --cyan:#06b6d4; --rain:#38bdf8;
+  --sun:#fbbf24; --red:#ef4444; --green:#10b981;
+  --border:#1e2d45; --border2:#243347;
+  --text:#e2e8f0; --muted:#64748b; --muted2:#475569; --white:#f8fafc;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Noto Sans Devanagari',sans-serif;
+  min-height:100vh; overflow-x:hidden;
+  font-size:17px; line-height:1.6;
+}
+body::before{
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 55% at 15% -5%,rgba(59,130,246,0.11) 0%,transparent 60%),
+    radial-gradient(ellipse 70% 45% at 85% 105%,rgba(6,182,212,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 50%,rgba(99,102,241,0.04) 0%,transparent 70%);
+}
+
+/* STARS */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.star{position:absolute;border-radius:50%;background:rgba(255,255,255,0.7);opacity:0;animation:twinkle var(--d) var(--delay) infinite;}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op)}}
+
+/* RAIN */
+.rain-wrap{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.raindrop{position:absolute;top:-30px;width:1.5px;background:linear-gradient(to bottom,transparent,rgba(96,165,250,0.22));border-radius:2px;animation:fall linear infinite;}
+@keyframes fall{to{transform:translateY(110vh)}}
+
+/* LAYOUT */
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:0 0 60px;}
+
+/* ── TOP RESULT BAR ── */
+.result-bar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,14,26,0.92);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border2);
+  padding:12px 16px;
+  min-height:60px;
+  display:flex;align-items:center;
+  transform:translateY(-100%);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.result-bar.show{transform:translateY(0);}
+.result-bar-inner{
+  display:flex;align-items:center;gap:12px;
+  width:100%;
+}
+.rb-icon{font-size:32px;flex-shrink:0;animation:floatIcon 3s ease-in-out infinite;}
+@keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.rb-info{flex:1;min-width:0;}
+.rb-city{font-size:13px;color:var(--blue3);font-weight:600;margin-bottom:1px;}
+.rb-status{font-size:16px;font-weight:800;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rb-temps{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;gap:2px;}
+.rb-max{font-size:20px;font-weight:800;color:#f87171;line-height:1;}
+.rb-min{font-size:14px;font-weight:600;color:var(--blue2);}
+.rb-chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.rb-chip{
+  font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;
+  border:1px solid transparent;
+}
+.chip-rain-lo{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:#34d399;}
+.chip-rain-md{background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.3);color:var(--sun);}
+.chip-rain-hi{background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);color:var(--rain);}
+.chip-wind-lo{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:#34d399;}
+.chip-wind-md{background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.3);color:var(--sun);}
+.chip-wind-hi{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#f87171;}
+.rb-share{
+  flex-shrink:0;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);
+  color:#25d366;font-size:18px;cursor:pointer;border:none;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+  background:rgba(37,211,102,0.15);
+}
+.rb-share:hover{background:rgba(37,211,102,0.3);transform:scale(1.1);}
+.rb-row2{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;}
+
+/* ── HEADER ── */
+.hdr{padding:22px 16px 14px;text-align:center;}
+.hdr-icon{font-size:60px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 18px rgba(59,130,246,0.5));animation:floatBig 4s ease-in-out infinite;}
+@keyframes floatBig{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+.hdr-tag{font-size:12px;color:var(--blue2);letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.hdr-title{font-size:clamp(22px,6vw,32px);font-weight:800;color:var(--white);margin-bottom:4px;line-height:1.2;}
+.hdr-title em{color:var(--blue2);font-style:normal;}
+.hdr-date{font-size:15px;color:var(--muted);}
+
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:14px 16px;}
+
+/* ── CITY SECTION ── */
+.city-section{padding:0 16px;margin-bottom:18px;}
+.section-head{font-size:16px;font-weight:700;color:var(--white);margin-bottom:10px;}
+.quick-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.qbtn{
+  padding:9px 18px;
+  background:var(--card2);border:1.5px solid var(--border2);
+  color:var(--blue3);border-radius:24px;
+  font-size:16px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:background 0.2s,border-color 0.2s,color 0.2s,transform 0.15s,box-shadow 0.2s;
+  white-space:nowrap;
+}
+.qbtn:hover{background:rgba(59,130,246,0.18);border-color:var(--blue2);color:var(--white);transform:translateY(-2px);}
+.qbtn:active{transform:scale(0.96);}
+.qbtn.active{
+  background:rgba(59,130,246,0.25);border-color:var(--blue2);color:var(--white);
+  box-shadow:0 0 14px rgba(59,130,246,0.35);
+  animation:btnPulse 0.35s ease;
+}
+@keyframes btnPulse{0%{transform:scale(1)}40%{transform:scale(1.07)}100%{transform:scale(1)}}
+
+/* ── SEARCH SECTION ── */
+.search-section{padding:0 16px;margin-bottom:18px;}
+.search-wrap{background:var(--card);border:1.5px solid var(--border2);border-radius:16px;padding:14px;}
+.search-row{display:flex;gap:8px;margin-bottom:8px;}
+.search-input{
+  flex:1;min-width:0;
+  background:var(--card2);border:1.5px solid var(--border);
+  color:var(--white);padding:13px 16px;border-radius:12px;
+  font-size:16px;font-family:inherit;outline:none;
+  transition:border-color 0.25s,box-shadow 0.25s;
+}
+.search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,0.13);}
+.search-input::placeholder{color:var(--muted2);font-size:14px;}
+.search-btn{
+  padding:13px 18px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;border:none;border-radius:12px;
+  cursor:pointer;font-size:16px;font-weight:800;
+  font-family:inherit;white-space:nowrap;flex-shrink:0;
+  transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 4px 14px rgba(59,130,246,0.3);
+}
+.search-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,0.4);}
+.search-btn:active{transform:scale(0.97);}
+.loc-btn{
+  width:100%;padding:12px;background:var(--card2);
+  border:1.5px solid var(--border);color:var(--muted);
+  border-radius:12px;cursor:pointer;font-size:15px;
+  font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:border-color 0.2s,color 0.2s;
+}
+.loc-btn:hover{border-color:var(--blue);color:var(--blue2);}
+.msg{padding:11px 14px;border-radius:10px;margin-top:10px;font-size:15px;display:none;}
+.msg-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;}
+.msg-txt{background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);color:var(--blue3);text-align:center;font-size:15px;}
+
+/* ── LUCKY LINK ── */
+.lucky-wrap{padding:0 16px;margin-bottom:18px;}
+.lucky-link{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));
+  border:1.5px solid rgba(99,102,241,0.28);border-radius:14px;
+  text-decoration:none;color:var(--text);font-size:16px;font-weight:700;
+  transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
+}
+.lucky-link:hover{border-color:rgba(99,102,241,0.55);color:var(--white);transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,0.15);}
+.lucky-left{display:flex;align-items:center;gap:10px;}
+.lucky-right{font-size:13px;color:#a5b4fc;white-space:nowrap;}
+
+/* ── LINKS SECTION ── */
+.links-section{padding:0 16px;}
+.links-tab-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+.ltab{
+  padding:8px 16px;border-radius:22px;
+  background:var(--card2);border:1.5px solid var(--border);
+  color:var(--muted);font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:background 0.2s,border-color 0.2s,color 0.2s,transform 0.15s;
+  white-space:nowrap;
+}
+.ltab.on{background:rgba(59,130,246,0.15);border-color:var(--blue);color:var(--blue2);}
+.ltab:hover{color:var(--text);transform:translateY(-1px);}
+.link-panel{display:none;}
+.link-panel.on{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.link-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.litem{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:11px 12px;
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:12px;text-decoration:none;
+  color:var(--muted);font-size:14px;line-height:1.4;
+  transition:border-color 0.2s,color 0.2s,background 0.2s,transform 0.15s;
+}
+.litem:hover{border-color:var(--blue);color:var(--white);background:rgba(59,130,246,0.07);transform:translateY(-2px);}
+.litem:active{transform:scale(0.97);}
+.litem-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+/* ── FOOTER ── */
+.footer{
+  text-align:center;padding:20px 16px 8px;
+  border-top:1px solid var(--border);margin-top:20px;
+  font-size:13px;color:var(--muted2);line-height:2;
+}
+.install-hint{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:8px;padding:10px 16px;
+  background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);
+  border-radius:10px;font-size:13px;color:var(--blue3);line-height:1.5;
+}
+
+@media(max-width:380px){
+  .qbtn{font-size:14px;padding:8px 14px;}
+  .link-grid{grid-template-columns:1fr;}
+  .rb-status{font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="rain-wrap" id="rainWrap"></div>
+
+<!-- TOP RESULT BAR -->
+<div class="result-bar" id="resultBar">
+  <div style="width:100%">
+    <div class="result-bar-inner">
+      <span class="rb-icon" id="rbIcon">⛅</span>
+      <div class="rb-info">
+        <div class="rb-city" id="rbCity"></div>
+        <div class="rb-status" id="rbStatus"></div>
+      </div>
+      <div class="rb-temps">
+        <div class="rb-max" id="rbMax"></div>
+        <div class="rb-min" id="rbMin"></div>
+      </div>
+      <button class="rb-share" onclick="doShare()" title="WhatsApp Share">&#x1F4F1;</button>
+    </div>
+    <div class="rb-chips" id="rbChips"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <span class="hdr-icon" id="hdrIcon">⛅</span>
+    <div class="hdr-tag">&#x092E;&#x0927;&#x094D;&#x092F;&#x092A;&#x094D;&#x0930;&#x0926;&#x0947;&#x0936; &#x092E;&#x094C;&#x0938;&#x092E;</div>
+    <div class="hdr-title">&#x0906;&#x091C; &#x0915;&#x093E; <em>&#x092E;&#x094C;&#x0938;&#x092E;</em></div>
+    <div class="hdr-date" id="hdrDate"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CITY BUTTONS -->
+  <div class="city-section">
+    <div class="section-head">&#x0936;&#x0939;&#x0930; &#x091A;&#x0941;&#x0928;&#x0947;&#x0902;</div>
+    <div class="quick-grid" id="quickGrid"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SEARCH -->
+  <div class="search-section">
+    <div class="section-head">&#x0915;&#x094B;&#x0908; &#x092D;&#x0940; &#x0936;&#x0939;&#x0930; &#x0922;&#x0942;&#x0902;&#x0922;&#x0947;&#x0902;</div>
+    <div class="search-wrap">
+      <div class="search-row">
+        <input class="search-input" id="cityInput"
+          placeholder="&#x091C;&#x0948;&#x0938;&#x0947;: Mandla, &#x0909;&#x091C;&#x094D;&#x091C;&#x0948;&#x0928;, Delhi..."
+          onkeydown="if(event.key==='Enter')doSearch()"/>
+        <button class="search-btn" onclick="doSearch()">&#x1F50D; &#x0926;&#x0947;&#x0916;&#x0947;&#x0902;</button>
+      </div>
+      <button class="loc-btn" onclick="doLocation()">&#x1F4CD; &#x092E;&#x0947;&#x0930;&#x0940; &#x0932;&#x094B;&#x0915;&#x0947;&#x0936;&#x0928;</button>
+      <div class="msg msg-err" id="msgErr"></div>
+      <div class="msg msg-txt" id="msgTxt"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- LUCKY LINK -->
+  <div class="lucky-wrap">
+    <a class="lucky-link" href="https://lucky-number.vhoriginal.com" target="_blank" rel="noopener">
+      <div class="lucky-left">
+        <span>&#x1F52E;</span>
+        <span>&#x0906;&#x091C; &#x0915;&#x093E; Lucky Number &#x091C;&#x093E;&#x0928;&#x0947;&#x0902;</span>
+      </div>
+      <span class="lucky-right">lucky-number.vhoriginal.com &#x2192;</span>
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- LINKS -->
+  <div class="links-section">
+    <div class="section-head">&#x0914;&#x0930; &#x092D;&#x0940; &#x092A;&#x0922;&#x093C;&#x0947;&#x0902;</div>
+    <div class="links-tab-bar" id="tabBar"></div>
+    <div id="linkPanels"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>&#x26C5; mausam.vhoriginal.com | vhoriginal.com</div>
+    <div style="font-size:11px;color:#334155;margin-top:2px;">Data: Open-Meteo API | Free &amp; Open Source</div>
+    <div class="install-hint">
+      &#x1F4F1; &#x0907;&#x0938;&#x0947; <strong>App</strong> &#x0915;&#x0940; &#x0924;&#x0930;&#x0939; Install &#x0915;&#x0930;&#x0947;&#x0902; &mdash;
+      Chrome &#x092E;&#x0947;&#x0902; &#x0993;&#x2630; &#x0926;&#x092C;&#x093E;&#x0913; &rarr; <em>&#x201C;Add to Home Screen&#x201D;</em> &#x2014; <strong>No Ads</strong>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var AMP=String.fromCharCode(38),DEG=String.fromCharCode(176);
+var lastW=null,lastCity='';
+
+var MP=[
+  {n:'Bhopal',lat:23.25,lon:77.40},{n:'Indore',lat:22.71,lon:75.85},
+  {n:'Jabalpur',lat:23.17,lon:79.94},{n:'Ujjain',lat:23.18,lon:75.78},
+  {n:'Gwalior',lat:26.22,lon:78.17},{n:'Rewa',lat:24.53,lon:81.29},
+  {n:'Sagar',lat:23.83,lon:78.73},{n:'Satna',lat:24.60,lon:80.83},
+  {n:'Mandla',lat:22.59,lon:80.37},{n:'Chhindwara',lat:22.05,lon:78.93},
+  {n:'Hoshangabad',lat:22.74,lon:77.72},{n:'Betul',lat:21.90,lon:77.90},
+  {n:'Ratlam',lat:23.33,lon:75.04},{n:'Dewas',lat:22.96,lon:76.05},
+  {n:'Vidisha',lat:23.52,lon:77.81}
+];
+
+var LNK={
+  '\uD83E\uDDE0 \u092E\u0928\u094B\u0935\u093F\u091C\u094D\u091E\u093E\u0928':[
+    {e:'\uD83D\uDCA4',t:'Overthinking \u0915\u0948\u0938\u0947 \u0930\u094B\u0915\u0947\u0902',u:'https://www.vhoriginal.com/2019/01/ways-how-to-stop-overthinking-in-hindi.html'},
+    {e:'\uD83C\uDF19',t:'Overthinking \u0914\u0930 \u0928\u0940\u0902\u0926 \u0928\u0939\u0940\u0902',u:'https://www.vhoriginal.com/2026/02/overthinking-kaise-roke-neend-na-aane-ka-ilaj.html'},
+    {e:'\u26A1',t:'\u092E\u0928 \u0915\u0940 \u092C\u0915\u092C\u0915 \u0930\u094B\u0915\u0947\u0902',u:'https://www.vhoriginal.com/2019/01/kaise-roken-man-ki-bakbak-ko.html'},
+    {e:'\uD83D\uDE30',t:'Social Anxiety \u0915\u094D\u092F\u093E \u0939\u0948?',u:'https://www.vhoriginal.com/2020/07/social-anxiety-disorder-in-hindi.html'},
+    {e:'\uD83D\uDE34',t:'\u0938\u0941\u092C\u0939 \u091C\u0932\u094D\u0926\u0940 \u0915\u0948\u0938\u0947 \u0909\u0920\u0947\u0902',u:'https://www.vhoriginal.com/2026/01/roj-subah-jaldi-kaise-uthe.html'},
+    {e:'\uD83D\uDCF5',t:'Digital Detox \u0915\u094D\u092F\u093E \u0939\u0948?',u:'https://www.vhoriginal.com/2026/01/digital-detox-in-hindi.html'},
+    {e:'\uD83D\uDD25',t:'Burnout \u0915\u0947 \u0932\u0915\u094D\u0937\u0923',u:'https://www.vhoriginal.com/2025/12/burnout-symptoms.html'},
+    {e:'\uD83C\uDF1A',t:'\u0905\u0902\u0927\u0947\u0930\u0947 \u0938\u0947 \u0921\u0930 \u0915\u094D\u092F\u094B\u0902?',u:'https://www.vhoriginal.com/2025/12/raat-mein-andhere-se-dar-lagta-hai.html'},
+    {e:'\uD83D\uDE04',t:'\u091C\u093F\u0902\u0926\u0917\u0940 \u0916\u0941\u0936 \u0915\u0948\u0938\u0947 \u0939\u094B?',u:'https://www.vhoriginal.com/2019/01/how-to-make-life-happy-in-hindi.html'},
+    {e:'\uD83D\uDCC8',t:'Success \u0915\u0947 8 \u0909\u092A\u093E\u092F',u:'https://www.vhoriginal.com/2018/05/8-8-powerful-things-for-success.html'}
+  ],
+  '\uD83D\uDCAA \u0938\u094D\u0935\u093E\u0938\u094D\u0925\u094D\u092F':[
+    {e:'\uD83E\uDEA8',t:'\u092A\u0947\u091F \u092E\u0947\u0902 \u0917\u0948\u0938 \u0915\u0947 \u0915\u093E\u0930\u0923',u:'https://www.vhoriginal.com/2022/03/pet-me-gas-banne-ke-karan-upachar.html'},
+    {e:'\uD83D\uDC9E',t:'100 \u0938\u093E\u0932 \u0924\u0915 \u0915\u0948\u0938\u0947 \u091C\u093F\u090F\u0902',u:'https://www.vhoriginal.com/2022/03/100-saal-tak-kaise-jiye.html'},
+    {e:'\u23F0',t:'\u0938\u094B\u0928\u0947-\u091C\u093E\u0917\u0928\u0947 \u0915\u093E \u0938\u0939\u0940 \u0938\u092E\u092F',u:'https://www.vhoriginal.com/2022/03/sone-aur-jaagne-ka-sahi-samay.html'},
+    {e:'\uD83E\uDDD8',t:'Yoga \u0915\u0947 5 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/03/5-yoga-karne-ke-fayde.html'},
+    {e:'\uD83E\uDDBB',t:'\u092A\u0948\u0930 \u0915\u0940 \u091A\u092E\u0921\u093C\u0940 \u0928\u0930\u092E \u0915\u0930\u0947\u0902',u:'https://www.vhoriginal.com/2022/03/how-to-soft-heel-in-hindi.html'},
+    {e:'\uD83D\uDC8A',t:'\u0938\u0942\u091C\u0928 \u0915\u0947 \u0918\u0930\u0947\u0932\u0942 \u0909\u092A\u093E\u092F',u:'https://www.vhoriginal.com/2022/02/home-remedies-for-swelling-in-hindi.html'},
+    {e:'\uD83D\uDD2C',t:'\u0936\u0930\u093E\u092C \u0915\u093E \u0936\u0930\u0940\u0930 \u092A\u0930 \u0905\u0938\u0930',u:'https://www.vhoriginal.com/2026/01/sharab-ka-sharir-par-asar-hindi.html'},
+    {e:'\uD83E\uDDC4',t:'\u0932\u0939\u0938\u0941\u0928 \u0916\u093E\u0928\u0947 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2021/12/lahsun-khane-ke-fayade.html'},
+    {e:'\uD83E\uDD5B',t:'\u0936\u093F\u0932\u093E\u091C\u0940\u0924 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/01/shilajit-ke-fayde-aur-nuksan.html'},
+    {e:'\uD83C\uDF76',t:'\u091B\u093E\u091B \u092A\u0940\u0928\u0947 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/01/cchach-peene-ke-fayade.html'}
+  ],
+  '\uD83E\uDDE0 \u0930\u094B\u091A\u0915 \u0924\u0925\u094D\u092F':[
+    {e:'\uD83D\uDC80',t:'\u0932\u094B\u0917 \u0915\u094D\u092F\u094B\u0902 \u092E\u0930\u0924\u0947 \u0939\u0948\u0902?',u:'https://www.vhoriginal.com/2022/03/log-kyo-marte-hain.html'},
+    {e:'\uD83C\uDF0C',t:'\u092E\u0930\u0928\u0947 \u0915\u0947 \u092C\u093E\u0926 \u0915\u0939\u093E\u0901 \u091C\u093E\u0924\u0947?',u:'https://www.vhoriginal.com/2022/03/marne-ke-baad-log-kahan-jate-hain.html'},
+    {e:'\u2728',t:'Deja Vu \u0915\u094D\u092F\u093E \u0939\u094B\u0924\u093E \u0939\u0948?',u:'https://www.vhoriginal.com/2022/03/what-is-deja-vu-in-hindi.html'},
+    {e:'\uD83D\uDCA1',t:'Mandela Effect \u0915\u094D\u092F\u093E \u0939\u0948?',u:'https://www.vhoriginal.com/2022/03/what-is-mandela-effect-in-hindi.html'},
+    {e:'\uD83D\uDEF8',t:'\u092E\u0902\u0917\u0932 \u092A\u0930 \u0915\u092C \u091C\u093E\u090F\u0917\u093E \u0907\u0902\u0938\u093E\u0928?',u:'https://www.vhoriginal.com/2022/03/when-will-man-go-to-mars-in-hindi.html'},
+    {e:'\uD83D\uDC0D',t:'\u0907\u091A\u094D\u091B\u093E\u0927\u093E\u0930\u0940 \u0928\u093E\u0917 \u0938\u091A \u0939\u0948\u0902?',u:'https://www.vhoriginal.com/2022/03/kya-ichchadhari-nag-hote-hain.html'},
+    {e:'\uD83C\uDFDB\uFE0F',t:'\u0938\u094D\u0935\u0930\u094D\u0917-\u0928\u0930\u0915 \u0939\u094B\u0924\u0947 \u0939\u0948\u0902?',u:'https://www.vhoriginal.com/2022/03/kya-svarg-nark-hote-hain.html'},
+    {e:'\uD83D\uDD3A',t:'\u092A\u094D\u0930\u093E\u0915\u0943\u0924\u093F \u0915\u0947 4 \u0928\u093F\u092F\u092E',u:'https://www.vhoriginal.com/2022/03/4-law-of-nature-in-hindi.html'},
+    {e:'\uD83C\uDFDB\uFE0F',t:'\u0909\u0947\u091C\u093F\u092A\u094D\u0924 \u0915\u0947 \u092A\u093F\u0930\u093E\u092E\u093F\u0921',u:'https://www.vhoriginal.com/2022/03/egyptian-pyramids-facts-in-hindi.html'},
+    {e:'\uD83C\uDF10',t:'Internet \u092E\u0947\u0902 \u0938\u092C\u0938\u0947 \u0915\u094D\u092F\u093E Search \u0939\u094B\u0924\u093E?',u:'https://www.vhoriginal.com/2022/03/internet-me-sabse-jyada-kya-search-hota.html'}
+  ],
+  '\uD83C\uDF72 \u0916\u093E\u0928\u093E-\u092A\u0940\u0928\u093E':[
+    {e:'\uD83C\uDF3F',t:'\u092E\u0941\u0902\u0917\u093E \u0916\u093E\u0928\u0947 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/04/6-munga-khane-ke-fayde-in-hindi.html'},
+    {e:'\uD83C\uDF6C',t:'\u0917\u0928\u094D\u0928\u0947 \u0915\u093E \u0930\u0938 \u092A\u0940\u0928\u0947 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/03/14-ganne-ka-ras-pine-ke-fayde.html'},
+    {e:'\uD83C\uDF70',t:'\u092A\u093F\u0938\u094D\u0924\u093E \u0916\u093E\u0928\u0947 \u0915\u0947 9 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/03/9-pista-khane-ke-fayde.html'},
+    {e:'\u2615',t:'\u0905\u0926\u0930\u0915 \u0935\u093E\u0932\u0940 \u091A\u093E\u092F \u0915\u0948\u0938\u0947 \u092C\u0928\u093E\u090F\u0902',u:'https://www.vhoriginal.com/2022/03/2-how-to-make-ginger-tea-in-hindi.html'},
+    {e:'\uD83E\uDD50',t:'\u091A\u093E\u092F \u0915\u0947 \u0938\u093E\u0925 \u0938\u092E\u094B\u0938\u093E \u0928\u0939\u0940\u0902',u:'https://www.vhoriginal.com/2022/03/6-chai-ke-saath-samosa-khane-ke-nuksan.html'},
+    {e:'\uD83C\uDF3E',t:'\u0938\u0902\u0924\u0941\u0932\u093F\u0924 \u0906\u0939\u093E\u0930 \u091A\u093E\u0930\u094D\u091F',u:'https://www.vhoriginal.com/2022/04/balanced-diet-chart-in-hindi.html'}
+  ],
+  '\uD83D\uDCB0 \u0915\u0948\u0932\u094D\u0915\u0941\u0932\u0947\u091F\u0930':[
+    {e:'\uD83D\uDCCA',t:'Calculator Hub',u:'https://www.vhoriginal.com/p/calculator-hub_4.html'},
+    {e:'\uD83D\uDCB9',t:'SIP Calculator',u:'https://www.vhoriginal.com/p/sip-calculator-sip_3.html'},
+    {e:'\uD83C\uDFE6',t:'FD Calculator',u:'https://www.vhoriginal.com/p/fd-calculator-fixed-deposit-calculator.html'},
+    {e:'\uD83D\uDCDD',t:'Income Tax',u:'https://www.vhoriginal.com/p/income-tax-calculator_9.html'},
+    {e:'\uD83D\uDECD\uFE0F',t:'GST Calculator',u:'https://www.vhoriginal.com/p/gst-calculator-gst-addremove-onehisaab.html'},
+    {e:'\uD83D\uDCB0',t:'PPF Calculator',u:'https://www.vhoriginal.com/p/ppf-calculator-2026-public-provident.html'},
+    {e:'\uD83D\uDCB3',t:'EMI Calculator',u:'https://www.vhoriginal.com/p/loan-prepayment-calculator-emi-interest.html'},
+    {e:'\uD83D\uDCB5',t:'Age Calculator',u:'https://www.vhoriginal.com/p/age-calculator-onehisaab_8.html'},
+    {e:'\uD83D\uDCB1',t:'Percentage Calc',u:'https://www.vhoriginal.com/p/percentage-calculator-onehisaab_2.html'},
+    {e:'\uD83C\uDFE0',t:'HRA Calculator',u:'https://www.vhoriginal.com/p/hra-calculator-online-house-rent_2.html'}
+  ],
+  '\uD83D\uDD4F \u0905\u0927\u094D\u092F\u093E\u0924\u094D\u092E':[
+    {e:'\uD83D\uDD4F',t:'\u092C\u0941\u0926\u094D\u0927 \u0927\u0930\u094D\u092E \u0915\u094D\u092F\u093E \u0939\u0948?',u:'https://www.vhoriginal.com/2026/04/buddhism-kya-hai-history-teachings-hindi.html'},
+    {e:'\uD83C\uDF38',t:'\u0917\u094C\u0924\u092E \u092C\u0941\u0926\u094D\u0927 \u0915\u0940 \u0915\u0939\u093E\u0928\u0940',u:'https://www.vhoriginal.com/2026/04/gautam-buddha-life-story-biography-hindi.html'},
+    {e:'\uD83E\uDD49',t:'\u0939\u0928\u0941\u092E\u093E\u0928 \u091A\u093E\u0932\u0940\u0938\u093E \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/04/benefits-of-reading-hanuman-chalisa-in-Hindi.html'},
+    {e:'\uD83D\uDD2E',t:'\u0915\u093E\u0932\u093E \u091C\u093E\u0926\u0942 \u0915\u094D\u092F\u093E \u0939\u0948?',u:'https://www.vhoriginal.com/2026/04/kala-jadu-kya-hai-sach-lakshan-upay.html'},
+    {e:'\uD83D\uDCDA',t:'\u0917\u0940\u0924\u093E \u092A\u0922\u093C\u0928\u0947 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/01/geeta-padhne-ke-labh.html'},
+    {e:'\uD83D\uDCDA',t:'\u0930\u093E\u092E\u093E\u092F\u0923 \u092A\u0922\u093C\u0928\u0947 \u0915\u0947 \u092B\u093E\u092F\u0926\u0947',u:'https://www.vhoriginal.com/2022/03/ramayan-padhne-ke-fayde.html'},
+    {e:'\uD83D\uDD70\uFE0F',t:'\u0915\u0932\u092F\u0941\u0917 \u0915\u092C \u0916\u0924\u094D\u092E \u0939\u094B\u0917\u093E?',u:'https://www.vhoriginal.com/2022/04/when-will-kalyug-end-in-hindi.html'},
+    {e:'\uD83D\uDCA1',t:'\u092E\u0939\u093E\u092E\u0943\u0924\u094D\u092F\u0941\u0902\u091C\u092F \u092E\u0902\u0924\u094D\u0930',u:'https://www.vhoriginal.com/2026/01/mahamrityunjaya-mantra-meaning-benefits-tool.html'},
+    {e:'\uD83C\uDF37',t:'Navratri \u0915\u0940 \u0915\u0925\u093E',u:'https://www.vhoriginal.com/2022/03/navratri-ki-katha-hindi.html'},
+    {e:'\uD83D\uDD4E',t:'\u092D\u0942\u0924 \u092D\u0917\u093E\u0928\u0947 \u0915\u093E \u092E\u0902\u0924\u094D\u0930',u:'https://www.vhoriginal.com/2022/02/bhoot-bhagane-ka-mantra.html'}
+  ]
+};
+
+function $(i){return document.getElementById(i);}
+
+// Stars
+(function(){
+  var s=$('stars');
+  for(var i=0;i<55;i++){
+    var el=document.createElement('div');el.className='star';
+    var sz=Math.random()*2.2+0.5;
+    el.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;--d:'+(2+Math.random()*5)+'s;--delay:'+(Math.random()*6)+'s;--op:'+(0.1+Math.random()*0.45)+';';
+    s.appendChild(el);
+  }
+})();
+
+// Rain
+(function(){
+  var rw=$('rainWrap');
+  for(var i=0;i<22;i++){
+    var d=document.createElement('div');d.className='raindrop';
+    var h=25+Math.random()*70;
+    d.style.cssText='left:'+(Math.random()*100)+'%;height:'+h+'px;animation-duration:'+(0.9+Math.random()*1.4)+'s;animation-delay:-'+(Math.random()*2)+'s;opacity:'+(0.07+Math.random()*0.13)+';';
+    rw.appendChild(d);
+  }
+})();
+
+// Date
+$('hdrDate').textContent=new Date().toLocaleDateString('hi-IN',{weekday:'long',day:'numeric',month:'long'});
+
+// City buttons
+(function(){
+  var g=$('quickGrid');
+  MP.forEach(function(c){
+    var b=document.createElement('button');b.className='qbtn';b.textContent=c.n;
+    b.onclick=function(){
+      document.querySelectorAll('.qbtn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      fetchW(c.lat,c.lon,c.n);
+    };
+    g.appendChild(b);
+  });
+})();
+
+// Link tabs
+(function(){
+  var tb=$('tabBar'),lp=$('linkPanels');
+  var cats=Object.keys(LNK);
+  cats.forEach(function(cat,idx){
+    var t=document.createElement('button');
+    t.className='ltab'+(idx===0?' on':'');t.textContent=cat;
+    t.onclick=function(){
+      document.querySelectorAll('.ltab').forEach(function(x){x.classList.remove('on');});
+      document.querySelectorAll('.link-panel').forEach(function(x){x.classList.remove('on');});
+      t.classList.add('on');document.getElementById('lp'+idx).classList.add('on');
+    };
+    tb.appendChild(t);
+    var p=document.createElement('div');p.className='link-panel'+(idx===0?' on':'');p.id='lp'+idx;
+    var grid=document.createElement('div');grid.className='link-grid';
+    LNK[cat].forEach(function(item){
+      var a=document.createElement('a');a.className='litem';a.href=item.u;a.target='_blank';a.rel='noopener';
+      a.innerHTML='<span class="litem-icon">'+item.e+'</span><span>'+item.t+'</span>';
+      grid.appendChild(a);
+    });
+    p.appendChild(grid);lp.appendChild(p);
+  });
+})();
+
+// Weather fetch
+function showErr(m){$('msgErr').style.display='block';$('msgErr').textContent=m;$('msgTxt').style.display='none';}
+function showTxt(m){$('msgTxt').style.display='block';$('msgTxt').textContent=m;$('msgErr').style.display='none';}
+function hideMsgs(){$('msgErr').style.display='none';$('msgTxt').style.display='none';}
+
+async function fetchW(lat,lon,name){
+  showTxt('\u0921\u0947\u091F\u093E \u0906 \u0930\u0939\u093E \u0939\u0948\u2026');
+  try{
+    var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+AMP+'longitude='+lon+AMP+'daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max'+AMP+'timezone=Asia%2FKolkata'+AMP+'forecast_days=1';
+    var resp=await fetch(url);
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    var d=await resp.json();
+    if(!d||!d.daily||!d.daily.temperature_2m_max)throw new Error('bad data');
+    var w={
+      tmax:Math.round(d.daily.temperature_2m_max[0]),
+      tmin:Math.round(d.daily.temperature_2m_min[0]),
+      rain:d.daily.precipitation_probability_max[0]||0,
+      wind:Math.round(d.daily.wind_speed_10m_max[0]||0)
+    };
+    lastW=w;lastCity=name;
+    hideMsgs();
+    renderBar(name,w);
+  }catch(e){
+    hideMsgs();
+    showErr('\u0921\u0947\u091F\u093E \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E \u2014 \u0925\u094B\u0921\u093C\u0940 \u0926\u0947\u0930 \u092C\u093E\u0926 try \u0915\u0930\u0947\u0902');
+  }
+}
+
+function renderBar(name,w){
+  // Status
+  var icon,text;
+  if(w.rain>60){icon='🌧️';text='\u0906\u091C \u092D\u093E\u0930\u0940 \u092C\u093E\u0930\u093F\u0936';}
+  else if(w.rain>30){icon='🌦️';text='\u0939\u0932\u094D\u0915\u0940 \u092C\u093E\u0930\u093F\u0936 \u0938\u0902\u092D\u0935';}
+  else if(w.wind>40){icon='🌪️';text='\u0924\u0942\u092B\u093E\u0928 \u0915\u093E \u0916\u0924\u0930\u093E \u26A0\uFE0F';}
+  else if(w.tmax>42){icon='🔥';text='\u0932\u0942 \u0915\u093E \u0916\u0924\u0930\u093E \u2014 \u0918\u0930 \u0930\u0939\u0947\u0902';}
+  else if(w.tmax>38){icon='☀️';text='\u0924\u0947\u091C \u0927\u0942\u092A \u0914\u0930 \u0917\u0930\u094D\u092E\u0940';}
+  else if(w.tmax<12){icon='🥶';text='\u0915\u0921\u093C\u093E\u0915\u0947 \u0915\u0940 \u0920\u0902\u0921';}
+  else if(w.tmax<18){icon='❄️';text:'\u0920\u0902\u0921 \u0915\u093E \u0905\u0938\u0930';}
+  else{icon='🌤️';text='\u092E\u094C\u0938\u092E \u0938\u093E\u092B \u0939\u0948';}
+
+  $('rbIcon').textContent=icon;
+  $('hdrIcon').textContent=icon;
+  $('rbCity').textContent='\uD83D\uDCCD '+name;
+  $('rbStatus').textContent=text;
+  $('rbMax').textContent=w.tmax+DEG+'C';
+  $('rbMin').textContent=w.tmin+DEG+'C';
+
+  // Chips
+  var rainCls,rainTxt;
+  if(w.rain<20){rainCls='chip-rain-lo';rainTxt='\uD83C\uDF1F \u092C\u093E\u0930\u093F\u0936 \u0928\u0939\u0940\u0902';}
+  else if(w.rain<50){rainCls='chip-rain-md';rainTxt='\uD83C\uDF27\uFE0F \u0939\u0932\u094D\u0915\u0940 \u092C\u093E\u0930\u093F\u0936 ('+w.rain+'%)';}
+  else{rainCls='chip-rain-hi';rainTxt='\u2614 \u092A\u0915\u094D\u0915\u093E \u092C\u093E\u0930\u093F\u0936 ('+w.rain+'%)';}
+
+  var windCls,windTxt;
+  if(w.wind<20){windCls='chip-wind-lo';windTxt='\uD83C\uDF43 \u0938\u093E\u092E\u093E\u0928\u094D\u092F \u0939\u0935\u093E';}
+  else if(w.wind<40){windCls='chip-wind-md';windTxt='\uD83D\uDCA8 \u0924\u0947\u091C \u0939\u0935\u093E ('+w.wind+' km/h)';}
+  else{windCls='chip-wind-hi';windTxt='\uD83C\uDF2A\uFE0F \u0924\u0942\u092B\u093E\u0928! ('+w.wind+' km/h)';}
+
+  $('rbChips').innerHTML=
+    '<span class="rb-chip '+rainCls+'">'+rainTxt+'</span>'+
+    '<span class="rb-chip '+windCls+'">'+windTxt+'</span>';
+
+  $('resultBar').classList.add('show');
+}
+
+// Search geo
+async function geo1(q){try{var r=await fetch('https://api.openweathermap.org/geo/1.0/direct?q='+encodeURIComponent(q)+',IN'+AMP+'limit=1'+AMP+'appid=294b9df6df9e686a2bfb565460e5fe6c');var d=await r.json();if(Array.isArray(d)&&d.length)return{lat:d[0].lat,lon:d[0].lon,name:d[0].name};}catch(e){}return null;}
+async function geo2(q){try{var r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+AMP+'count=1'+AMP+'language=en'+AMP+'country_code=IN');var d=await r.json();if(d&&d.results&&d.results.length)return{lat:d.results[0].latitude,lon:d.results[0].longitude,name:d.results[0].name};}catch(e){}return null;}
+async function geo3(q){try{var r=await fetch('https://nominatim.openstreetmap.org/search?format=json'+AMP+'limit=1'+AMP+'q='+encodeURIComponent(q+', India'));var d=await r.json();if(Array.isArray(d)&&d.length)return{lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon),name:(d[0].display_name||'').split(',')[0]||q};}catch(e){}return null;}
+
+window.doSearch=async function(){
+  var q=($('cityInput').value||'').trim();
+  if(!q)return showErr('\u0936\u0939\u0930 \u0915\u093E \u0928\u093E\u092E \u0932\u093F\u0916\u0947\u0902');
+  showTxt('\u0936\u0939\u0930 \u0922\u0942\u0902\u0922 \u0930\u0939\u0947 \u0939\u0948\u0902\u2026');
+  var g=(await geo1(q))||(await geo2(q))||(await geo3(q));
+  if(!g){return showErr('\u0936\u0939\u0930 \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E \u2014 \u0926\u0942\u0938\u0930\u0947 \u0928\u093E\u092E \u0938\u0947 try \u0915\u0930\u0947\u0902');}
+  fetchW(g.lat,g.lon,g.name);
+};
+
+window.doLocation=function(){
+  if(!navigator.geolocation)return showErr('Location support \u0928\u0939\u0940\u0902 \u0939\u0948');
+  showTxt('\u0932\u094B\u0915\u0947\u0936\u0928 \u092A\u0924\u093E \u0915\u0930 \u0930\u0939\u0947 \u0939\u0948\u0902\u2026');
+  navigator.geolocation.getCurrentPosition(
+    function(p){fetchW(p.coords.latitude,p.coords.longitude,'\u0906\u092A\u0915\u0940 \u0932\u094B\u0915\u0947\u0936\u0928');},
+    function(){showErr('Location permission \u0926\u0947\u0902');},
+    {enableHighAccuracy:true,timeout:10000}
+  );
+};
+
+window.doShare=function(){
+  if(!lastW)return;
+  var w=lastW;
+  var msg='\u26C5 \u0906\u091C \u0915\u093E \u092E\u094C\u0938\u092E \u2014 '+lastCity+'\n\n'+
+    '\uD83C\uDF21\uFE0F \u0905\u0927\u093F\u0915\u0924\u092E: '+w.tmax+DEG+'C | \u0928\u094D\u092F\u0942\u0928\u0924\u092E: '+w.tmin+DEG+'C\n'+
+    '\uD83C\uDF27\uFE0F \u092C\u093E\u0930\u093F\u0936: '+w.rain+'%\n'+
+    '\uD83C\uDF2A\uFE0F \u0939\u0935\u093E: '+w.wind+' km/h\n\n'+
+    '\uD83D\uDD17 \u0905\u092A\u0928\u0947 \u0936\u0939\u0930 \u0915\u093E \u092E\u094C\u0938\u092E \u0926\u0947\u0916\u0947\u0902:\nhttps://mausam.vhoriginal.com';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+};
+</script>
+</body>
+</html>
